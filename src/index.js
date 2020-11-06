@@ -1,4 +1,4 @@
-
+// include 
 
 const PRICE_AXIS_START = 620;
 const TURN_AXIS_START = 100;
@@ -15,7 +15,7 @@ const INITIAL_PORTFOLIO = 100000;
 let p_value = INITIAL_PORTFOLIO;
 
 function updatePValue() {
-  portfolio_el.innerHTML = "Portfolio $: " + p_value;
+  portfolio_el.innerHTML = "Portfolio (USD): " + p_value;
 }
 
 const START_OIL_TICKER = 400;
