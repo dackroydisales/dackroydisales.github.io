@@ -110,7 +110,7 @@ const INITIAL_PORTFOLIO = 100000;
 let p_value = INITIAL_PORTFOLIO;
 
 function updatePValue() {
-  portfolio_el.innerHTML = "Portfolio (USD): " + p_value;
+  portfolio_el.innerHTML = "Portfolio: $" + p_value;
 }
 
 const START_OIL_TICKER = 400;
@@ -128,10 +128,17 @@ function updateLastPrice() {
   last_price_el.innerHTML = "Previous commodity price: " + last_price;
 }
 
-let ipos = 100;
+let ipos = 0;
 
 function updatePosition() {
-  position_el.innerHTML = "Current position: " + ipos;
+  if(ipos > 0)
+  {
+    position_el.innerHTML = "Current position: LONG " + ipos;
+  } else if(ipos === 0) {
+    position_el.innerHTML = "Current position: No position";
+  } else {
+    position_el.innerHTML = "Current position: SHORT " + Math.abs(ipos);
+  }
 }
 
 let turns_left = 10;
@@ -154,68 +161,98 @@ function decrease() {
   updatePosition();
 }
 
-function turn_tick() {
-  if (flag_game_over === false) {
-    tick();
+function game_loop(){
+  btn_plus.addEventListener("click", increase);
+  btn_minus.addEventListener("click", decrease);
+  document.body.removeChild(btn_start);
+  investment_phase();
+}
+
+
+
+let seconds_left;
+
+function investment_phase()
+{
+  if(flag_game_over === false)
+  {
+    seconds_left = 10;
+    update_timer();
+    interval = setInterval(update_timer, 1000);
+    setTimeout(enter_tick, 10000);
   }
+}
+
+function update_timer(){
+    info_el.innerHTML = `You have ${seconds_left} seconds left to invest.`;
+    seconds_left--;
+}
+
+function enter_tick(){
+  clearInterval(interval);
+  info_el.innerHTML = "Trading start!";
+  tick();
 }
 
 let last_point = [TURN_AXIS_START, draw_the_price()];
 const TIME_SEGMENT = 10;//10px
 
 
-function investment_dividend() {
-  p_value = p_value + ipos * (oil_ticker - last_price);
+function investment_ticker_update(last) {
+  p_value = p_value + ipos * (oil_ticker - last);
 }
 
 let flag_game_over = false;
 
 function gameOver() {
+  btn_plus.removeEventListener("click", increase);
+  btn_minus.removeEventListener("click", decrease);
   if(p_value >= (INITIAL_PORTFOLIO * 2))
   {
-    last_price_el.innerHTML = "You win!";
+    info_el.innerHTML = "You win!";
   } else if (p_value <= 0)
   {
-    last_price_el.innerHTML = "You lose!";
+    info_el.innerHTML = "You lose!";
   } else {
-    last_price_el.innerHTML = "Game over!";
+    info_el.innerHTML = "Game over!";
   }
   flag_game_over = true;
 }
 
-// //via https://www.sitepoint.com/delay-sleep-pause-wait/
-// function sleep(ms) {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// }
 //ratio of 250/10 = the graph exceeds its limits after a 75/25 result, very rare
 
-
 function tick() {
+  btn_plus.removeEventListener("click", increase);
+  btn_minus.removeEventListener("click", decrease);
   last_price = oil_ticker;
   render_axes();
-  for (let i = 0; i < 100; i++) {
+  let interval = setInterval(() => {
+    let oil_prev_ticker = oil_ticker;
     if (Math.random() > 0.5) {
       oil_ticker += 10;
     } else {
       oil_ticker -= 10;
     }
-      render_tick();
-  }
-  updateOilPrice();
-  investment_dividend();
-  consume_turn();
-  update_all();
-  if (turns_left === 0 || p_value <= 0 || p_value >= (INITIAL_PORTFOLIO * 2)) {
-    gameOver();
-  }
+    updateOilPrice();
+    investment_ticker_update(oil_prev_ticker);
+    updatePValue();
+    render_tick();
+  }, 20);
+  setTimeout(() => {
+    clearInterval(interval);
+    btn_plus.addEventListener("click", increase);
+    btn_minus.addEventListener("click", decrease);
+    consume_turn();
+    updateLastPrice();
+    updateTurnsLeft();
+    if (turns_left === 0 || p_value <= 0 || p_value >= INITIAL_PORTFOLIO * 2) {
+      gameOver();
+    } else {
+      investment_phase();
+    }
+  }, 2000);
 }
 
-function update_all() {
-  updatePValue();
-  updateOilPrice();
-  updateLastPrice();
-  updateTurnsLeft();
-}
 
 function draw_the_price(){
   let distance_from_max = (1 - (START_OIL_TICKER + oil_ticker - last_price) * 1.0 /(2* START_OIL_TICKER)) * WORKING_HEIGHT;
@@ -252,6 +289,7 @@ function render_axes()
   //
 }
 
+
 function render_tick(){
   ctx.beginPath();
   ctx.strokeStyle = "#FF0000";
@@ -262,6 +300,7 @@ function render_tick(){
 }
 
 let portfolio_el = document.createElement("p");
+portfolio_el.className = "portfolio";
 updatePValue();
 document.body.appendChild(portfolio_el);
 
@@ -278,23 +317,25 @@ updatePosition();
 document.body.appendChild(position_el);
 
 let btn_plus = document.createElement("BUTTON");
-btn_plus.innerHTML = "INCREASE";
-btn_plus.addEventListener("click", increase);
+btn_plus.innerHTML = "LONG 100";
 document.body.appendChild(btn_plus);
 
 let btn_minus = document.createElement("BUTTON");
-btn_minus.innerHTML = "DECREASE";
-btn_minus.addEventListener("click", decrease);
+btn_minus.innerHTML = "SHORT 100";
 document.body.appendChild(btn_minus);
 
-let btn_invest = document.createElement("BUTTON");
-btn_invest.innerHTML = "INVEST";
-btn_invest.addEventListener("click", turn_tick);
-document.body.appendChild(btn_invest);
+let btn_start = document.createElement("BUTTON");
+btn_start.innerHTML = "START GAME";
+btn_start.addEventListener("click", game_loop);
+document.body.appendChild(btn_start);
 
 let turns_el = document.createElement("p");
 updateTurnsLeft();
 document.body.appendChild(turns_el);
+
+let info_el = document.createElement("p");
+info_el.innerHTML = "Welcome to StockTrader! Press START GAME to begin.";
+document.body.appendChild(info_el);
 
 /***/ })
 
