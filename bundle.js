@@ -174,12 +174,14 @@ let seconds_left;
 
 function investment_phase()
 {
+  ipos = 0;
+  updatePosition();
   if(flag_game_over === false)
   {
     seconds_left = 10;
-    update_timer();
-    interval = setInterval(update_timer, 1000);
-    setTimeout(enter_tick, 10000);
+    info_el.innerHTML = "Investment phase start!";
+    setTimeout(() => {interval = setInterval(update_timer, 1000)}, 700);
+    setTimeout(enter_tick, 11700);
   }
 }
 
@@ -245,6 +247,7 @@ function tick() {
     consume_turn();
     updateLastPrice();
     updateTurnsLeft();
+
     if (turns_left === 0 || p_value <= 0 || p_value >= INITIAL_PORTFOLIO * 2) {
       gameOver();
     } else {
