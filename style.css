@@ -10,39 +10,43 @@
 
 .ST-container.night
 {
-  background-color: #aaaaaa;
+  background-color: #555555;
 }
 
 button.day {
   background-color: #FFFF33;
-  border: none;
+  border: 1px solid black;
   border-radius: 10px;
   color: black;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
-  font-size: 16px;
-  margin: 4px 2px;
+  font-size: 20px;
+  font-family: 'Times New Roman';
+  font-weight: 600;
+  margin: 3px 6px;
   cursor: pointer;
 }
 
 button.night {
-  background-color: darkcyan;
-  border: none;
+  background-color: steelblue;
+  border: 1px solid white;
   border-radius: 10px;
   color: white;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
-  font-size: 16px;
-  margin: 4px 2px;
+  font-size: 20px;
+  font-family: 'Times New Roman';
+  font-weight: 600;
+  margin: 3px 6px;
   cursor: pointer;
 }
 
 .title-container.day
 {
   font-size: 40px;
-  color: tomato;
+  color: orangered;
   padding: 10px 20px;
 }
 
@@ -67,7 +71,8 @@ button.night {
 {
   display: flex;
   flex-direction: column;
-  margin-top: 100px;
+  margin: 0 auto;
+  margin-top: 30px;
 }
 
 p.day
@@ -82,7 +87,70 @@ p.night
   color: white;
 }
 
+.info-container{
+  min-height: 60px;
+  margin-bottom: 5px;
+}
+
+.info-container p{
+  line-height: 26px;
+  font-size: 26px;
+}
+
+.trader-container{
+  margin-bottom: 15px;
+}
+
+.trader-container p{
+  line-height: 26px;
+  font-size: 26px;
+  padding-right: 10px;
+}
+
+.net-worth-container{
+  display: flex;
+  padding-bottom: 10px;
+}
+
+.net-worth-container p{
+  line-height: 32px;
+  font-size: 32px;
+}
+
+.ticker-div{
+  display: flex;
+}
+
+.price-container{
+  margin-bottom: 15px;
+}
+
+.price-container p{
+  line-height: 22px;
+  font-size: 22px;
+}
+
+.ticker-div p{
+  line-height: 26px;
+  font-size: 26px;
+  padding-right: 10px;
+}
+
+.stock-arrow.positive {
+  color: green;
+}
+
+.stock-arrow.negative {
+  color: red;
+}
+
 .instructional-container{
   display: flex;
   flex-direction: column;
+  margin-bottom: 15px;
+  width: 360px;
+}
+
+.instructional-btns{
+  margin-bottom: 12px;
 }

@@ -4,7 +4,7 @@ const PRICE_AXIS_START = 620;
 const TURN_AXIS_START = 100;
 const PRICE_AXIS_END = 100;
 const TURN_AXIS_END = 1100; //REFACTOR: with 100 time segments of 10, full size of graphs
-const MY_WIDTH = 1280;
+const MY_WIDTH = 1130;
 const MY_HEIGHT = 720;
 
 const WORKING_HEIGHT = Math.abs(PRICE_AXIS_END - PRICE_AXIS_START);
@@ -15,7 +15,19 @@ const INITIAL_PORTFOLIO = 10000;
 let p_value = INITIAL_PORTFOLIO;
 
 function updatePValue() {
-  portfolio_el.innerHTML = "Portfolio: $" + p_value;
+  portfolio_el.innerHTML = "Net worth: $" + p_value;
+  if(p_value - last_net_worth > 0)
+  {
+    net_worth_arrow.innerHTML = "▲";
+    net_worth_arrow.className = "stock-arrow positive";
+  } else if(p_value - last_net_worth < 0)
+  {
+    net_worth_arrow.innerHTML = "▼";
+    net_worth_arrow.className = "stock-arrow negative";
+  } else {
+    net_worth_arrow.innerHTML = "";
+    net_worth_arrow.className = "stock-arrow positive";
+  }
 }
 
 const START_OIL_TICKER = 80;
@@ -24,13 +36,36 @@ let oil_ticker = START_OIL_TICKER;
 let MAX_PRICE = 160;//start price * 2
 
 function updateOilPrice() {
-  oil_el.innerHTML = "Current commodity price: " + oil_ticker;
+  oil_el.innerHTML = "Current price ($): " + oil_ticker;
+
+  if(oil_ticker - last_price >= 0) {
+    arrow_el.className = "stock-arrow positive";
+  } else {
+    arrow_el.className = "stock-arrow negative";
+  }
+
+  if (oil_ticker - last_price >= 15) {
+    arrow_el.innerHTML = "▲▲▲";
+  } else if (oil_ticker - last_price >= 10) {
+    arrow_el.innerHTML = "▲▲";
+  } else if (oil_ticker - last_price >= 5) {
+    arrow_el.innerHTML = "▲";
+  } else if (oil_ticker - last_price > -5) {
+    arrow_el.innerHTML = "";
+  } else if (oil_ticker - last_price > -10) {
+    arrow_el.innerHTML = "▼";
+  } else if (oil_ticker - last_price > -15) {
+    arrow_el.innerHTML = "▼▼";
+  } else {
+    arrow_el.innerHTML = "▼▼▼";
+  }
 }
 
+let last_net_worth = p_value;
 let last_price = oil_ticker;
 
 function updateLastPrice() {
-  last_price_el.innerHTML = "Previous commodity price: " + last_price;
+  last_price_el.innerHTML = "Previous price ($): " + last_price;
 }
 
 let ipos = 0;
@@ -38,11 +73,11 @@ let ipos = 0;
 function updatePosition() {
   if(ipos > 0)
   {
-    position_el.innerHTML = "Current position: LONG " + ipos;
+    position_el.innerHTML = "My position: LONG " + ipos;
   } else if(ipos === 0) {
-    position_el.innerHTML = "Current position: No position";
+    position_el.innerHTML = "My position: No position";
   } else {
-    position_el.innerHTML = "Current position: SHORT " + Math.abs(ipos);
+    position_el.innerHTML = "My position: SHORT " + Math.abs(ipos);
   }
 }
 
@@ -174,7 +209,12 @@ function investment_phase()
   if(flag_game_over === false)
   {
     seconds_left = 10;
+    if(turns_left === 10) {
+      info_el.innerHTML = "Get ready to invest!<br />Investment phase start!"
+    }
+    else {
     info_el.innerHTML = "Investment phase start!";
+    }
     setTimeout(() => {interval = setInterval(update_timer, 1000)}, 700);
     setTimeout(enter_tick, 11700);
   }
@@ -227,6 +267,7 @@ function tick() {
   btn_night.removeEventListener("click", set_night_mode);
   prev_ticker = [oil_ticker];
   last_price = oil_ticker;
+  last_net_worth = p_value;
   render_axes();
   let interval = setInterval(() => {
     let oil_prev_ticker = oil_ticker;
@@ -271,7 +312,7 @@ function re_render()
       {
         ctx.beginPath();
         if (canvas.className === "day") {
-          ctx.strokeStyle = "tomato";
+          ctx.strokeStyle = "orangered";
         } //night
         else {
           ctx.strokeStyle = "lime";
@@ -401,7 +442,7 @@ function render_these_axes(price) {
 function render_tick(){
   ctx.beginPath();
     if (canvas.className === "day") {
-      ctx.strokeStyle = "tomato";
+      ctx.strokeStyle = "orangered";
     } //night
     else {
       ctx.strokeStyle = "lime";
@@ -417,34 +458,35 @@ let data_container = document.createElement("div");
 data_container.className = "data-container";
 game_container.appendChild(data_container);
 
-let price_container = document.createElement("div");
-price_container.className = "price-container";
-data_container.appendChild(price_container);
+let info_container = document.createElement("div");
+info_container.className = "info-container";
+data_container.appendChild(info_container);
 
+let info_el = document.createElement("p");
+info_el.className = "day";
+info_el.innerHTML = "Welcome to StockTrader!<br /> Press START GAME to begin.";
+info_container.appendChild(info_el);
+
+let trader_container = document.createElement("div");
+trader_container.className = "trader-container";
+data_container.appendChild(trader_container);
+
+let net_worth_container = document.createElement("div");
+net_worth_container.className = "net-worth-container";
+trader_container.appendChild(net_worth_container);
 
 let portfolio_el = document.createElement("p");
 portfolio_el.className = "day";
+net_worth_container.appendChild(portfolio_el);
+
+let net_worth_arrow = document.createElement("p");
+net_worth_arrow.className = "stock-arrow positive";
+net_worth_arrow.innerHTML = "";
+net_worth_container.appendChild(net_worth_arrow);
+
+
 updatePValue();
-price_container.appendChild(portfolio_el);
 
-let oil_el = document.createElement("p");
-oil_el.className = "day";
-updateOilPrice();
-price_container.appendChild(oil_el);
-
-let last_price_el = document.createElement("p");
-last_price_el.className = "day";
-updateLastPrice();
-price_container.appendChild(last_price_el);
-
-let turns_el = document.createElement("p");
-turns_el.className = "day";
-updateTurnsLeft();
-price_container.appendChild(turns_el);
-
-let trader_container = document.createElement("div");
-trader_container.className = 'trader-container';
-data_container.appendChild(trader_container);
 
 let position_el = document.createElement("p");
 position_el.className = "day";
@@ -453,7 +495,7 @@ trader_container.appendChild(position_el);
 
 let btn_plus = document.createElement("BUTTON");
 btn_plus.innerHTML = "LONG 100";
-btn_plus.className="day";
+btn_plus.className = "day";
 trader_container.appendChild(btn_plus);
 
 let btn_minus = document.createElement("BUTTON");
@@ -461,25 +503,45 @@ btn_minus.innerHTML = "SHORT 100";
 btn_minus.className = "day";
 trader_container.appendChild(btn_minus);
 
-let info_container = document.createElement("div");
-info_container.className = "info-container";
-data_container.appendChild(info_container);
+let price_container = document.createElement("div");
+price_container.className = "price-container";
+data_container.appendChild(price_container);
 
-let info_el = document.createElement("p");
-info_el.className = "day";
-info_el.innerHTML = "Welcome to StockTrader! Press START GAME to begin.";
-info_container.appendChild(info_el);
+let ticker_div = document.createElement("div");
+ticker_div.className = "ticker-div";
+price_container.appendChild(ticker_div);
+
+let oil_el = document.createElement("p");
+oil_el.className = "day";
+ticker_div.appendChild(oil_el);
+
+let arrow_el = document.createElement("p");
+arrow_el.className = "stock-arrow positive";
+arrow_el.innerHTML = "";
+ticker_div.appendChild(arrow_el);
+
+updateOilPrice();
+
+let last_price_el = document.createElement("p");
+last_price_el.className = "day";
+updateLastPrice();
+price_container.appendChild(last_price_el);
 
 let instructional_container = document.createElement("div");
 instructional_container.className = "instructional-container";
 data_container.appendChild(instructional_container);
+
+let turns_el = document.createElement("p");
+turns_el.className = "day";
+updateTurnsLeft();
+instructional_container.appendChild(turns_el);
 
 function show_how_to_play() {
   let text_string =
     "How to play: <br /><br />\
   Choose a LONG or SHORT investment position during the investment phase, \
   and watch your portfolio's value rise and fall during the trading phase. <br /><br />\
-  Double your initial portfolio of $10,000 within 10 turns, but don't run out of money \
+  Double your starting investment of $10,000 within 10 turns, but don't run out of money \
   or the game is over!";
   instructional_text.innerHTML = text_string;
 }
