@@ -93,8 +93,6 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-// include 
-
 const PRICE_AXIS_START = 620;
 const TURN_AXIS_START = 100;
 const PRICE_AXIS_END = 100;
@@ -299,6 +297,9 @@ let game_over_message = document.createElement("p");
 game_over_message.className = "day";
 game_over_display_container.appendChild(game_over_message);
 
+let game_over_image = document.createElement("img");
+game_over_display_container.appendChild(game_over_image);
+
 function set_market_type(){
   if (market_type_btn.innerHTML === "Neutral") {
     market_type_btn.innerHTML = "Hot";
@@ -445,13 +446,16 @@ function gameOver() {
   {
     info_el.innerHTML = "You won!";
     game_over_message.innerHTML = "You won!";
+    game_over_image.src = "./src/money.gif";
   } else if (p_value <= 0)
   {
     info_el.innerHTML = "You lost!";
     game_over_message.innerHTML = "You lost!";
+    game_over_image.src = "./src/broke.gif";
   } else {
     info_el.innerHTML = "Game over!";
     game_over_message.innerHTML = "Game over!";
+    game_over_image.src = "./src/draw.gif";
   }
   btn_start.disabled = false;
   stock_tips_btn.disabled = false;
