@@ -92,13 +92,13 @@ button.night {
   margin-top: 30px;
 }
 
-p.day, span.day
+p.day, span.day, a.day
 {
   font-size: 20px;
   color: black;
 }
 
-p.night, span.night
+p.night, span.night, a.night
 {
   font-size: 20px;
   color: white;
@@ -165,9 +165,46 @@ p.night, span.night
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
-  width: 360px;
+  width: 500px;
 }
 
 .instructional-btns{
   margin-bottom: 12px;
+}
+
+.about-container
+{
+  width: 600px;
+  margin: 0 auto;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+a{
+  text-decoration: none;
+}
+
+.game-over-display-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.game-over-display-container.day {
+  background-color: white;
+  border: 1px solid black;
+}
+
+.game-over-display-container.night {
+  background-color: #555555;
+  border: 1px solid white;
+}
+
+.game-over-display-container p{
+  font-size: 100px;
+  line-height: 100px;
 }

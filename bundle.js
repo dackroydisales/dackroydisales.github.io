@@ -290,6 +290,15 @@ btn_start.className = "day";
 settings_container.appendChild(btn_start);
 
 
+let game_over_display_container = document.createElement("div");
+game_over_display_container.className = "game-over-display-container day";
+game_over_display_container.style.display = "none";
+de_container.appendChild(game_over_display_container);
+
+let game_over_message = document.createElement("p");
+game_over_message.className = "day";
+game_over_display_container.appendChild(game_over_message);
+
 function set_market_type(){
   if (market_type_btn.innerHTML === "Neutral") {
     market_type_btn.innerHTML = "Hot";
@@ -330,6 +339,14 @@ function set_day_mode() {
 
   re_render();
 
+  copyright_section.className = "day";
+  linked_in_link.className = "day";
+  github_link.className = "day";
+  st_link.className = "day";
+
+  game_over_display_container.className = "game-over-display-container day";
+  game_over_message.className = "day";
+
   de_container.className = "ST-container day";
 }
 
@@ -361,6 +378,14 @@ function set_night_mode() {
   canvas.className = "night";
 
   re_render();
+
+  game_over_display_container.className = "game-over-display-container night";
+  game_over_message.className = "night";
+
+  copyright_section.className = "night";
+  linked_in_link.className = "night";
+  github_link.className = "night";
+  st_link.className = "night";
 
   de_container.className = "ST-container night";
 }
@@ -418,16 +443,20 @@ function gameOver() {
   btn_minus.removeEventListener("click", decrease);
   if(p_value >= (INITIAL_PORTFOLIO * 2))
   {
-    info_el.innerHTML = "You win!";
+    info_el.innerHTML = "You won!";
+    game_over_message.innerHTML = "You won!";
   } else if (p_value <= 0)
   {
-    info_el.innerHTML = "You lose!";
+    info_el.innerHTML = "You lost!";
+    game_over_message.innerHTML = "You lost!";
   } else {
     info_el.innerHTML = "Game over!";
+    game_over_message.innerHTML = "Game over!";
   }
   btn_start.disabled = false;
   stock_tips_btn.disabled = false;
   market_type_btn.disabled = false;
+  game_over_display_container.style.display = "block";
   flag_game_over = true;
 }
 
@@ -795,11 +824,41 @@ function initialize() {
   ipos = 0;
   turns_left = 10;
   last_point = [TURN_AXIS_START, draw_the_price()];
+  game_over_display_container.style.display = "none";
   flag_game_over = false;
   prev_ticker = [];
   re_render();
 }
 
+let about_container = document.createElement("div");
+about_container.className = "about-container";
+de_container.appendChild(about_container);
+
+let copyright_section = document.createElement("span");
+copyright_section.className = "day";
+copyright_section.innerHTML = "© Daniel Ackroyd-Isales 2020";
+about_container.appendChild(copyright_section);
+
+let linked_in_link = document.createElement("a");
+linked_in_link.className = "day";
+linked_in_link.href = "https://www.linkedin.com/in/daniel-ackroyd-isales/";
+linked_in_link.target = "_blank";
+linked_in_link.innerHTML = "LinkedIn";
+about_container.appendChild(linked_in_link);
+
+let github_link = document.createElement("a");
+github_link.className = "day";
+github_link.href = "https://github.com/dackroydisales/";
+github_link.target = "_blank";
+github_link.innerHTML = "Github";
+about_container.appendChild(github_link);
+
+let st_link = document.createElement("a");
+st_link.className = "day";
+st_link.href = "https://github.com/dackroydisales/stocktrader";
+st_link.target = "_blank";
+st_link.innerHTML = "StockTrader Repo";
+about_container.appendChild(st_link);
 
 /***/ })
 
