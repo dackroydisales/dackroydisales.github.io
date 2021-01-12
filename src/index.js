@@ -486,7 +486,9 @@ function show_how_to_play() {
 
 function show_stock_terminology() {
   let text_string =
-    "LONG 100: Gain $100 for each $1 increase in the stock price. \
+    " Investing terminology:<br /><br />\
+      \
+      LONG 100: Gain $100 for each $1 increase in the stock price. \
       Lose $100 for each $1 decrease in the stock price.<br /><br />\
       SHORT 100: Lose $100 for each $1 increase in the stock price. \
       Gain $100 for each $1 decrease in the stock price.<br /><br /> \
