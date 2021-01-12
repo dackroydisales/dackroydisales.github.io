@@ -1,0 +1,88 @@
+.ST-container
+{
+  min-height: 100vh;
+}
+
+.ST-container.day
+{
+  background-color: white;
+}
+
+.ST-container.night
+{
+  background-color: #aaaaaa;
+}
+
+button.day {
+  background-color: #FFFF33;
+  border: none;
+  border-radius: 10px;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+button.night {
+  background-color: darkcyan;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.title-container.day
+{
+  font-size: 40px;
+  color: tomato;
+  padding: 10px 20px;
+}
+
+.title-container.night
+{
+  font-size: 40px;
+  color: lime;
+  padding: 10px 20px;
+}
+
+.title-container p
+{
+  text-align: center;
+}
+
+.game-container
+{
+  display: flex;
+}
+
+.data-container
+{
+  display: flex;
+  flex-direction: column;
+  margin-top: 100px;
+}
+
+p.day
+{
+  font-size: 20px;
+  color: black;
+}
+
+p.night
+{
+  font-size: 20px;
+  color: white;
+}
+
+.instructional-container{
+  display: flex;
+  flex-direction: column;
+}
