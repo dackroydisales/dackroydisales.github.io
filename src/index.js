@@ -12,7 +12,7 @@ const WORKING_HEIGHT = Math.abs(PRICE_AXIS_END - PRICE_AXIS_START);
 const WORKING_LENGTH = TURN_AXIS_START - TURN_AXIS_END;
 
 const INITIAL_PORTFOLIO = 10000;
-let p_value = INITIAL_PORTFOLIO;
+let p_value;
 
 function updatePValue() {
   portfolio_el.innerHTML = "Net worth: $" + p_value;
@@ -31,7 +31,7 @@ function updatePValue() {
 }
 
 const START_OIL_TICKER = 80;
-let oil_ticker = START_OIL_TICKER;
+let oil_ticker;
 
 let MAX_PRICE = 160;//start price * 2
 
@@ -61,14 +61,14 @@ function updateOilPrice() {
   }
 }
 
-let last_net_worth = p_value;
-let last_price = oil_ticker;
+let last_net_worth;
+let last_price;
 
 function updateLastPrice() {
   last_price_el.innerHTML = "Previous price ($): " + last_price;
 }
 
-let ipos = 0;
+let ipos;
 
 function updatePosition() {
   if(ipos > 0)
@@ -81,7 +81,7 @@ function updatePosition() {
   }
 }
 
-let turns_left = 10;
+let turns_left;
 
 function updateTurnsLeft() {
   turns_el.innerHTML = "Turns left: " + turns_left;
@@ -102,9 +102,21 @@ function decrease() {
 }
 
 function game_loop(){
+
+  flag_game_over = false;
+  initialize();
+  updatePValue();
+  updatePosition();
+  updateOilPrice();
+  updateLastPrice();
+  updateTurnsLeft();
+  show_how_to_play();
+
   btn_plus.addEventListener("click", increase);
   btn_minus.addEventListener("click", decrease);
   btn_start.disabled = true;
+  stock_tips_btn.disabled = true;
+  market_type_btn.disabled = true;
   investment_phase();
 }
 
@@ -122,10 +134,59 @@ title.innerHTML = "StockTrader - Beat The Market!";
 title_container.appendChild(title);
 
 
-
 let settings_container = document.createElement("div");
 settings_container.className = "settings-container";
 de_container.appendChild(settings_container);
+
+mode_container = document.createElement("span");
+mode_container.className = "mode-container";
+settings_container.appendChild(mode_container);
+
+let btn_day = document.createElement("BUTTON");
+btn_day.innerHTML = "Day Mode";
+btn_day.addEventListener("click", set_day_mode);
+btn_day.className = "day";
+mode_container.appendChild(btn_day);
+
+let btn_night = document.createElement("BUTTON");
+btn_night.innerHTML = "Night Mode";
+btn_night.addEventListener("click", set_night_mode);
+btn_night.className = "day";
+mode_container.appendChild(btn_night);
+
+let hacks_container = document.createElement("span");
+hacks_container.className = "hacks-container";
+settings_container.appendChild(hacks_container);
+
+let stock_tips_container = document.createElement("span");
+stock_tips_container.className = "stock-tips-container";
+hacks_container.appendChild(stock_tips_container);
+
+let stock_tips_description = document.createElement("span");
+stock_tips_description.innerHTML = "Stock tips:  ";
+stock_tips_description.className = "day";
+stock_tips_container.appendChild(stock_tips_description);
+
+let stock_tips_btn = document.createElement("button");
+stock_tips_btn.innerHTML = "No";
+stock_tips_btn.className = "day";
+stock_tips_btn.addEventListener("click", set_stock_tip);
+stock_tips_container.appendChild(stock_tips_btn);
+
+let market_type_container = document.createElement("span");
+market_type_container.className = "market-type-container";
+hacks_container.appendChild(market_type_container);
+
+let market_type_description = document.createElement("span");
+market_type_description.innerHTML = "Market type:  ";
+market_type_description.className = "day";
+market_type_container.appendChild(market_type_description);
+
+let market_type_btn = document.createElement("button");
+market_type_btn.innerHTML = "Neutral";
+market_type_btn.className = "day";
+market_type_btn.addEventListener("click", set_market_type);
+market_type_container.appendChild(market_type_btn);
 
 let btn_start = document.createElement("BUTTON");
 btn_start.innerHTML = "Start Game";
@@ -133,23 +194,27 @@ btn_start.addEventListener("click", game_loop);
 btn_start.className = "day";
 settings_container.appendChild(btn_start);
 
-let btn_day = document.createElement("BUTTON");
-btn_day.innerHTML = "Day Mode";
-btn_day.addEventListener("click", set_day_mode);
-btn_day.className = "day";
-settings_container.appendChild(btn_day);
 
-let btn_night = document.createElement("BUTTON");
-btn_night.innerHTML = "Night Mode";
-btn_night.addEventListener("click", set_night_mode);
-btn_night.className = "day";
-settings_container.appendChild(btn_night);
+function set_market_type(){
+  if (market_type_btn.innerHTML === "Neutral") {
+    market_type_btn.innerHTML = "Hot";
+  } else if (market_type_btn.innerHTML === "Hot") {
+    market_type_btn.innerHTML = "Cold";
+  } else if (market_type_btn.innerHTML === "Cold") {
+    market_type_btn.innerHTML = "Neutral";
+  }
+}
 
 function set_day_mode() {
 
   btn_start.className = "day";
   btn_day.className = "day";
   btn_night.className = "day";
+  stock_tips_description.className = "day";
+  stock_tips_btn.className = "day";
+  market_type_description.className = "day";
+  market_type_btn.className = "day";
+
   btn_plus.className = "day";
   btn_minus.className = "day";
 
@@ -177,6 +242,11 @@ function set_night_mode() {
   btn_start.className = "night";
   btn_day.className = "night";
   btn_night.className = "night";
+  stock_tips_btn.className = "night";
+  stock_tips_description.className = "night";
+  market_type_description.className = "night";
+  market_type_btn.className = "night";
+
   btn_plus.className = "night";
   btn_minus.className = "night";
 
@@ -211,6 +281,8 @@ function investment_phase()
     seconds_left = 10;
     if(turns_left === 10) {
       info_el.innerHTML = "Get ready to invest!<br />Investment phase start!"
+    } else if(stock_tip === true && (turns_left === 8 || turns_left === 1)){
+      info_el.innerHTML = "HOT TIP: BUY NOW!<br />Investment phase start!";
     }
     else {
     info_el.innerHTML = "Investment phase start!";
@@ -221,7 +293,12 @@ function investment_phase()
 }
 
 function update_timer(){
+  if (stock_tip === true && (turns_left === 8 || turns_left === 1)) {
+    info_el.innerHTML =
+      `HOT TIP: BUY NOW! <br />You have ${seconds_left} seconds left to invest.`;
+  } else {
     info_el.innerHTML = `You have ${seconds_left} seconds left to invest.`;
+  }
     seconds_left--;
 }
 
@@ -231,7 +308,7 @@ function enter_tick(){
   tick();
 }
 
-let last_point = [TURN_AXIS_START, draw_the_price()];
+let last_point;
 const TIME_SEGMENT = 10;//10px
 
 
@@ -239,7 +316,7 @@ function investment_ticker_update(last) {
   p_value = p_value + ipos * (oil_ticker - last);
 }
 
-let flag_game_over = false;
+let flag_game_over;
 
 function gameOver() {
   btn_plus.removeEventListener("click", increase);
@@ -253,12 +330,44 @@ function gameOver() {
   } else {
     info_el.innerHTML = "Game over!";
   }
+  btn_start.disabled = false;
+  stock_tips_btn.disabled = false;
+  market_type_btn.disabled = false;
   flag_game_over = true;
 }
 
-//ratio of 250/10 = the graph exceeds its limits after a 75/25 result, very rare
+let stock_tip = false;
 
-let prev_ticker = [];
+function set_stock_tip() {//flip based on button display
+  if(stock_tips_btn.innerHTML === "No")
+  {
+    stock_tips_btn.innerHTML = "Yes";
+    stock_tip = true;
+  } else {
+      stock_tips_btn.innerHTML = "No";
+      stock_tip = false;
+  }
+}
+
+let prev_ticker;
+
+function get_the_threshold()
+{
+  if(stock_tip === true && (turns_left === 8 || turns_left === 1))
+  {
+    return 0.35;
+  }
+
+  if(market_type_btn.innerHTML === "Cold")
+  {
+    return 0.6;
+  } else if(market_type_btn.innerHTML === "Hot")
+  {
+    return 0.4;
+  } else {
+    return 0.5;
+  }
+}
 
 function tick() {
   btn_plus.removeEventListener("click", increase);
@@ -271,7 +380,7 @@ function tick() {
   render_axes();
   let interval = setInterval(() => {
     let oil_prev_ticker = oil_ticker;
-    if (Math.random() > 0.5) {
+    if (Math.random() > get_the_threshold()) {
       oil_ticker += 1;
     } else {
       oil_ticker -= 1;
@@ -484,6 +593,7 @@ net_worth_arrow.className = "stock-arrow positive";
 net_worth_arrow.innerHTML = "";
 net_worth_container.appendChild(net_worth_arrow);
 
+initialize();
 
 updatePValue();
 
@@ -581,3 +691,16 @@ let instructional_text = document.createElement("p");
 instructional_text.className = "day";
 show_how_to_play();
 instructional_container.appendChild(instructional_text);
+
+function initialize() {
+  p_value = INITIAL_PORTFOLIO;
+  oil_ticker = START_OIL_TICKER;
+  last_net_worth = p_value;
+  last_price = oil_ticker;
+  ipos = 0;
+  turns_left = 10;
+  last_point = [TURN_AXIS_START, draw_the_price()];
+  flag_game_over = false;
+  prev_ticker = [];
+  re_render();
+}
